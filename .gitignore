@@ -1,0 +1,7 @@
+##### SWIFT BUILD
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+/Package.resolved
+/Package.pins
