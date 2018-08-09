@@ -36,27 +36,10 @@ public extension Date {
     }
     
     public func toJulianDate() -> JulianDate {
-        var gregorian = Calendar(identifier: .gregorian)
-        gregorian.timeZone = TimeZone(abbreviation: "UTC")!
-        let components = gregorian.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self)
+        let secondsSince1970 = self.timeIntervalSince1970
+        let daysSince1970 = secondsSince1970 / (24.0 * 60.0 * 60.0)
         
-        let year = components.year!
-        let month = components.month!
-        let day = components.day!
-        // JDN = (1461 × (Y + 4800 + (M − 14)/12))/4 +(367 × (M − 2 − 12 × ((M − 14)/12)))/12 − (3 × ((Y + 4900 + (M - 14)/12)/100))/4 + D − 32075
-        
-        let julianDay = (1461 * (year + 4800 + (month - 14)/12) ) / 4 +
-                        (367 * (month - 2 - 12 * ((month - 14) / 12) ) ) / 12 -
-                        (3 * ((year + 4900 + (month - 14)/12) / 100) ) / 4 +
-                        day - 32075
-        
-        var julianDate = Double(julianDay)
-        
-        julianDate += (Double(components.hour!) - 12.0) / 24.0
-        julianDate += Double(components.minute!) / 1440.0
-        julianDate += Double(components.second!) / 86400.0
-        
-        return julianDate
+        return daysSince1970 + J1970
     }
     
     public func toJ2000Date() -> JulianDate {

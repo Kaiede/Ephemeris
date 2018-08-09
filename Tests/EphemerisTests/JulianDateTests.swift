@@ -34,7 +34,8 @@ class JulianCalendarTests: XCTestCase {
             ("2018-08-09 03:51:00.000 UTC", 2458339.0, 2458339.660417),
             ("2020-02-29 16:15:00.000 UTC", 2458909.0, 2458909.177083),
             ("2005-04-15 18:30:00.000 UTC", 2453476.0, 2453476.270833),
-            ("2025-12-25 15:45:45.000 UTC", 2461035.0, 2461035.156771)
+            ("2025-12-25 15:45:45.000 UTC", 2461035.0, 2461035.156771),
+            ("3001-05-15 17:38:25.000 UTC", 2817287.0, 2817287.235012)
         ]
         
         for (inputString, targetJulianDay, targetJulianDate) in testDates {
@@ -59,7 +60,8 @@ class JulianCalendarTests: XCTestCase {
             ("2018-08-09 03:51:00.000 UTC", 2458339.0, 2458339.660417),
             ("2020-02-29 16:15:00.000 UTC", 2458909.0, 2458909.177083),
             ("2005-04-15 18:30:00.000 UTC", 2453476.0, 2453476.270833),
-            ("2025-12-25 15:45:45.000 UTC", 2461035.0, 2461035.156771)
+            ("2025-12-25 15:45:45.000 UTC", 2461035.0, 2461035.156771),
+            ("3001-05-15 17:38:25.000 UTC", 2817287.0, 2817287.235012)
         ]
         
         for (targetString, _, inputJulianDate) in testDates {
@@ -72,11 +74,13 @@ class JulianCalendarTests: XCTestCase {
             }
             
             // Issue here is that the test data has already been rounded off, losing precision.
-            // So make sure our drift isn't any bigger than 30 milliseconds. That tells us we
-            // are in the right ballpark.
+            // So make sure our drift isn't any bigger than +/- 1/2 of 0.000001 Julian Day.
+            // This is about as good as it will ever get for this data set. 
+            let maxDriftSec = 0.0864 / 2.0
+        
             XCTAssertEqual(date, date2)
             let drift = abs(date.timeIntervalSince(targetDate))
-            XCTAssert(drift < 0.030)
+            XCTAssert(drift < maxDriftSec, "drift of \(drift) for date '\(targetString)' exceeds \(Int(maxDriftSec * 1000)) milliseconds")
         }
     }
     
