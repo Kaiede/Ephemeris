@@ -46,10 +46,9 @@ public extension Date {
         // JDN = (1461 × (Y + 4800 + (M − 14)/12))/4 +(367 × (M − 2 − 12 × ((M − 14)/12)))/12 − (3 × ((Y + 4900 + (M - 14)/12)/100))/4 + D − 32075
         
         let julianDay = (1461 * (year + 4800 + (month - 14)/12) ) / 4 +
-            (367 * (month - 2 - 12 * ((month - 14) / 12) ) ) / 12 -
-            (3 * ((year + 4900 + (month - 14)/12) / 100) ) / 4 +
-            day -
-        32075
+                        (367 * (month - 2 - 12 * ((month - 14) / 12) ) ) / 12 -
+                        (3 * ((year + 4900 + (month - 14)/12) / 100) ) / 4 +
+                        day - 32075
         
         var julianDate = Double(julianDay)
         
