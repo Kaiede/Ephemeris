@@ -3,5 +3,6 @@
 import PackageDescription
 
 let package = Package(
-    name: "Ephemeris"
+    name: "Ephemeris",
+    swiftLanguageVersions: [3, 4]
 )
