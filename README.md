@@ -2,8 +2,12 @@
 
 [![Build Status](https://travis-ci.org/Kaiede/Ephemeris.svg?branch=master)](https://travis-ci.org/Kaiede/Ephemeris)
 ![Swift](https://img.shields.io/badge/Swift-3.1.1-green.svg)
-![Raspbian](https://img.shields.io/badge/OS-Raspbian%20Stretch-green.svg)
+![Swift](https://img.shields.io/badge/Swift-4.1.2-green.svg)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+
+![Raspbian](https://img.shields.io/badge/OS-Raspbian%20Stretch-green.svg)
+![Ubuntu](https://img.shields.io/badge/OS-Ubuntu-green.svg)
+![macOS](https://img.shields.io/badge/OS-macOS-green.svg)
 
 A Sun/Moon Calculator for Swift (In Progress)
 
