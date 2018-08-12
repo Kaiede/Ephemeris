@@ -26,9 +26,24 @@
 import Foundation
 
 public typealias JulianDate = Double
+public typealias JulianCentury = Double
 
 let J2000: JulianDate = 2451545.0
 let J1970: JulianDate = 2440587.5 // Start of Computer Epoch
+
+let JulianCenturyLength: Double = 36525.0
+
+func century(fromJ2000 date: JulianDate) -> JulianCentury {
+    return date / JulianCenturyLength
+}
+
+func century(fromJulianDate date: JulianDate) -> JulianCentury {
+    return century(fromJ2000: date - J2000)
+}
+
+func dateJ2000(fromCentury century: JulianCentury) -> JulianDate {
+    return century * JulianCenturyLength
+}
 
 public extension Date {
     public func toJulianDay() -> JulianDate {
