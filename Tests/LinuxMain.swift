@@ -3,4 +3,6 @@ import XCTest
 
 XCTMain([
     testCase(JulianCalendarTests.allTests),
+    testCase(CoordinateTests.allTests),
+    testCase(MatrixTests.allTests),
 ])
