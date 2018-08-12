@@ -39,20 +39,46 @@ class CoordinateTests: XCTestCase {
         
         for data in testData {
             let vector = Cartesian3D(x: data.0, y: data.1, z: data.2)
-            let polar = Polar3D(withCartesian: vector)
+            let polar = Spherical(withCartesian: vector)
             
             let targetAzimuth = data.3
             let targetAltitude = data.4
             let targetRadius = data.5
             
-            XCTAssertEqual(polar.azimuth, targetAzimuth, accuracy: targetAzimuth.ulp)
-            XCTAssertEqual(polar.altitude, targetAltitude, accuracy: targetAltitude.ulp)
-            XCTAssertEqual(polar.radius, targetRadius, accuracy: targetRadius.ulp)
+            let maxAccuracy = 1E-14
+            XCTAssertEqual(polar.azimuth, targetAzimuth, accuracy: maxAccuracy)
+            XCTAssertEqual(polar.altitude, targetAltitude, accuracy: maxAccuracy)
+            XCTAssertEqual(polar.radius, targetRadius, accuracy: maxAccuracy)
         }
     }
     
+    func testCartesianConversion() {
+        let testData = [
+            // X, Y, Z ... Azimuth, Altitude, Radius
+            (0.0, 20.0, 20.0, 90.0, 45.0, 28.284271247461902),
+            (20.0, 20.0, sqrt( 20 * 20 * 2 ), 45.0, 45.0, 40.0),
+            (20.0, -20.0, sqrt( 20 * 20 * 2 ), -45.0, 45.0, 40.0),
+            (-20.0, 20.0, sqrt( 20 * 20 * 2 ), 135.0, 45.0, 40.0),
+            (-20.0, -20.0, sqrt( 20 * 20 * 2 ), -135.0, 45.0, 40.0)
+        ]
+        
+        for data in testData {
+            let polar = Spherical(azimuth: data.3, altitude: data.4, radius: data.5)
+            let vector = Cartesian3D(withSpherical: polar)
+            
+            let targetX = data.0
+            let targetY = data.1
+            let targetZ = data.2
+            
+            let maxAccuracy = 1E-14
+            XCTAssertEqual(vector.x, targetX, accuracy: maxAccuracy)
+            XCTAssertEqual(vector.y, targetY, accuracy: maxAccuracy)
+            XCTAssertEqual(vector.z, targetZ, accuracy: maxAccuracy)
+        }
+    }
     
     static var allTests = [
-        ("testPolarConversion", testPolarConversion)
+        ("testPolarConversion", testPolarConversion),
+        ("testCartesianConversion", testCartesianConversion)
     ]
 }

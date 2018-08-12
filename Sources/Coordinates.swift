@@ -36,7 +36,7 @@ func rad(fromDeg deg: Degrees) -> Radians {
     return deg * Double.pi / 180.0
 }
 
-struct Polar3D {
+struct Spherical {
     var phi: Radians
     var theta: Radians
     var radius: Double
@@ -49,7 +49,7 @@ struct Polar3D {
 }
 
 // Altitude/Azimuth Interface
-extension Polar3D {
+extension Spherical {
     var azimuth: Degrees {
         get {
             return deg(fromRad: self.phi)
@@ -76,7 +76,7 @@ extension Polar3D {
 }
 
 // From Cartesian
-extension Polar3D {
+extension Spherical {
     init(withCartesian coords: Cartesian3D) {
         // rho is Length of projection in x-y plane
         let rhoSquared = coords[0] * coords[0] + coords[1] * coords[1]
@@ -104,6 +104,16 @@ struct Cartesian3D {
         self.vector[0] = x
         self.vector[1] = y
         self.vector[2] = z
+    }
+}
+
+// From Polar
+extension Cartesian3D {
+    init(withSpherical coords: Spherical) {
+        let radius = coords.radius
+        self.vector[0] = radius * (cos(coords.theta) * cos(coords.phi))
+        self.vector[1] = radius * (cos(coords.theta) * sin(coords.phi))
+        self.vector[2] = radius * (sin(coords.theta))
     }
 }
 
