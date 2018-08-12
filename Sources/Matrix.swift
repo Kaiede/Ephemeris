@@ -26,7 +26,7 @@
 import Foundation
 
 struct Matrix3D {
-    private var matrix: [[Double]] =
+    fileprivate var matrix: [[Double]] =
         [[ 1, 0, 0, 0 ],
          [ 0, 1, 0, 0 ],
          [ 0, 0, 1, 0 ],
