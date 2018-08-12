@@ -45,8 +45,60 @@ struct Matrix3D {
     init() {}
 }
 
+// Transposition
+extension Matrix3D {
+    func transposed() -> Matrix3D {
+        var result = Matrix3D()
+        
+        result.matrix[0][0] = self.matrix[0][0]
+        result.matrix[0][1] = self.matrix[1][0]
+        result.matrix[0][2] = self.matrix[2][0]
+        result.matrix[0][3] = self.matrix[3][0]
+
+        result.matrix[1][0] = self.matrix[0][1]
+        result.matrix[1][1] = self.matrix[1][1]
+        result.matrix[1][2] = self.matrix[2][1]
+        result.matrix[1][3] = self.matrix[3][1]
+
+        result.matrix[2][0] = self.matrix[0][2]
+        result.matrix[2][1] = self.matrix[1][2]
+        result.matrix[2][2] = self.matrix[2][2]
+        result.matrix[2][3] = self.matrix[3][2]
+
+        result.matrix[3][0] = self.matrix[0][3]
+        result.matrix[3][1] = self.matrix[1][3]
+        result.matrix[3][2] = self.matrix[2][3]
+        result.matrix[3][3] = self.matrix[3][3]
+
+        return result
+    }
+}
+
 // Convenience Initializers
 extension Matrix3D {
+    init(withData data: [[Double]]) {
+        // Yes, this is unrolled. Why not?
+        self.matrix[0][0] = data[0][0]
+        self.matrix[0][1] = data[0][1]
+        self.matrix[0][2] = data[0][2]
+        self.matrix[0][3] = data[0][3]
+
+        self.matrix[1][0] = data[1][0]
+        self.matrix[1][1] = data[1][1]
+        self.matrix[1][2] = data[1][2]
+        self.matrix[1][3] = data[1][3]
+
+        self.matrix[2][0] = data[2][0]
+        self.matrix[2][1] = data[2][1]
+        self.matrix[2][2] = data[2][2]
+        self.matrix[2][3] = data[2][3]
+
+        self.matrix[3][0] = data[3][0]
+        self.matrix[3][1] = data[3][1]
+        self.matrix[3][2] = data[3][2]
+        self.matrix[3][3] = data[3][3]
+    }
+    
     init(withTranslationX x: Double, y: Double, z: Double) {
         self.matrix[0][3] = x
         self.matrix[1][3] = y

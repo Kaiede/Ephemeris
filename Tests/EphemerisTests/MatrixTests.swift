@@ -153,11 +153,37 @@ class MatrixTests: XCTestCase {
         }
     }
     
+    func testTransposition() {
+        let testData: [[Double]] = [
+            [ 1, 2, 3, 4 ],
+            [ 5, 6, 7, 8 ],
+            [ 9, 10, 11, 12 ],
+            [ 13, 14, 15, 16 ],
+        ]
+        
+        let targetData: [[Double]] = [
+            [ 1, 5, 9, 13 ],
+            [ 2, 6, 10, 14 ],
+            [ 3, 7, 11, 15 ],
+            [ 4, 8, 12, 16 ],
+        ]
+        
+        var targetMatrix = Matrix3D(withData: targetData)
+        var matrix = Matrix3D(withData: testData).transposed()
+
+        for row in 0...3 {
+            for col in 0...3 {
+                XCTAssertEqual(matrix[row][col], targetMatrix[row][col], accuracy: Double.ulpOfOne)
+            }
+        }
+    }
+    
     static var allTests = [
         ("testSimpleTranslation", testSimpleTranslation),
         ("testManyTranslations", testManyTranslations),
         ("testRotationX", testRotationX),
         ("testRotationY", testRotationY),
-        ("testRotationZ", testRotationZ)
+        ("testRotationZ", testRotationZ),
+        ("testTransposition", testTransposition)
     ]
 }
