@@ -23,8 +23,18 @@
  SOFTWARE.)
  */
 
+#if os(Linux)
+import Glibc
+#else
+import Darwin.C
+#endif
+
 import XCTest
 @testable import Ephemeris
+
+private func rand(in range: ClosedRange<Double>) -> Double {
+    return range.lowerBound + (range.upperBound - range.lowerBound) * drand48()
+}
 
 class MatrixTests: XCTestCase {
     func testSimpleTranslation() {
@@ -42,8 +52,8 @@ class MatrixTests: XCTestCase {
         for _ in 1...100 {
             // Translate two random vectors using matrix math, check against simple addition.
             // Harder to validate, but should bubble up more subtle issues than a fixed data set.
-            let vector1 = Cartesian3D(x: Double.random(in: range), y: Double.random(in: range), z: Double.random(in: range))
-            let vector2 = Cartesian3D(x: Double.random(in: range), y: Double.random(in: range), z: Double.random(in: range))
+            let vector1 = Cartesian3D(x: rand(in: range), y: rand(in: range), z: rand(in: range))
+            let vector2 = Cartesian3D(x: rand(in: range), y: rand(in: range), z: rand(in: range))
             
             let matrix = Matrix3D(withTranslation: vector2)
             let result = vector1 * matrix
