@@ -59,9 +59,29 @@ extension Matrix3D {
         self.matrix[2][3] = translation.z
     }
     
-    // init(withRotationAroundX rotation: Radians)
-    // init(withRotationAroundY rotation: Radians)
-    // init(withRotationAroundZ rotation: Radians)
+    init(withRotationAroundX rotation: Radians) {
+        self.matrix[1][1] = cos(rotation)
+        self.matrix[1][2] = sin(rotation)
+
+        self.matrix[2][1] = -sin(rotation)
+        self.matrix[2][2] = cos(rotation)
+    }
+    
+    init(withRotationAroundY rotation: Radians) {
+        self.matrix[0][0] = cos(rotation)
+        self.matrix[0][2] = -sin(rotation)
+
+        self.matrix[2][0] = sin(rotation)
+        self.matrix[2][2] = cos(rotation)
+    }
+    
+    init(withRotationAroundZ rotation: Radians) {
+        self.matrix[0][0] = cos(rotation)
+        self.matrix[0][1] = sin(rotation)
+        
+        self.matrix[1][0] = -sin(rotation)
+        self.matrix[1][1] = cos(rotation)
+    }
 }
 
 // Matrix Mathematics
