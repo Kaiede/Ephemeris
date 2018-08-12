@@ -25,8 +25,19 @@
 
 import Foundation
 
+typealias Arcseconds = Double
 typealias Degrees = Double
 typealias Radians = Double
+
+let FullCircle: Radians = Double.pi * 2.0
+
+func normalize(radians: Radians) -> Radians {
+    var result = radians
+    while result < 0.0 {
+        result += FullCircle
+    }
+    return result
+}
 
 func deg(fromRad rad: Radians) -> Degrees {
     return rad * 180.0 / Double.pi
@@ -34,6 +45,10 @@ func deg(fromRad rad: Radians) -> Degrees {
 
 func rad(fromDeg deg: Degrees) -> Radians {
     return deg * Double.pi / 180.0
+}
+
+func rad(fromArcseconds arcs: Arcseconds) -> Radians {
+    return rad(fromDeg: arcs / 3600.0)
 }
 
 struct Spherical {
@@ -44,6 +59,33 @@ struct Spherical {
     init(phi: Radians, theta: Radians, radius: Double) {
         self.phi = phi
         self.theta = theta
+        self.radius = radius
+    }
+}
+
+// Right Ascension / Declination Interface
+extension Spherical {
+    var rightAscension: Degrees {
+        get {
+            return deg(fromRad: normalize(radians: self.phi))
+        }
+        set {
+            self.phi = rad(fromDeg: newValue)
+        }
+    }
+    
+    var declination: Degrees {
+        get {
+            return deg(fromRad: self.theta)
+        }
+        set {
+            self.theta = rad(fromDeg: newValue)
+        }
+    }
+    
+    init(rightAscension: Degrees, declination: Degrees, radius: Double) {
+        self.phi = rad(fromDeg: rightAscension)
+        self.theta = rad(fromDeg: declination)
         self.radius = radius
     }
 }
