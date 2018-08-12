@@ -89,7 +89,7 @@ extension Polar3D {
 }
 
 struct Cartesian3D {
-    private var vector: [Double] = [ 0, 0, 0 ]
+    fileprivate var vector: [Double] = [ 0, 0, 0 ]
     
     subscript(index: Int) -> Double {
         get {
