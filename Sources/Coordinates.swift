@@ -136,3 +136,11 @@ extension Cartesian3D {
         }
     }
 }
+
+extension Cartesian3D {
+    func radius() -> Double {
+        return sqrt( self.vector[0] * self.vector[0] +
+                     self.vector[1] * self.vector[1] +
+                     self.vector[2] * self.vector[2] )
+    }
+}
