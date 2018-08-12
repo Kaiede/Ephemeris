@@ -87,8 +87,9 @@ class MatrixTests: XCTestCase {
             XCTAssertEqual(result.radius(), vector.radius(), accuracy: vector.radius().ulp)
             
             // Y & Z are variant, rotations can be a little inaccurate from Deg/Rad conversion
-            XCTAssertEqual(result.y, targetY, accuracy: targetY.ulp * 2.0)
-            XCTAssertEqual(result.z, targetZ, accuracy: targetZ.ulp * 2.0)
+            let maxAccuracy = 1E-14
+            XCTAssertEqual(result.y, targetY, accuracy: maxAccuracy)
+            XCTAssertEqual(result.z, targetZ, accuracy: maxAccuracy)
         }
     }
     
@@ -116,8 +117,9 @@ class MatrixTests: XCTestCase {
             XCTAssertEqual(result.radius(), vector.radius(), accuracy: vector.radius().ulp)
             
             // X & Z are variant, rotations can be a little inaccurate from Deg/Rad conversion
-            XCTAssertEqual(result.x, targetX, accuracy: targetX.ulp * 2.0)
-            XCTAssertEqual(result.z, targetZ, accuracy: targetZ.ulp * 2.0)
+            let maxAccuracy = 1E-14
+            XCTAssertEqual(result.x, targetX, accuracy: maxAccuracy)
+            XCTAssertEqual(result.z, targetZ, accuracy: maxAccuracy)
         }
     }
     
@@ -145,8 +147,9 @@ class MatrixTests: XCTestCase {
             XCTAssertEqual(result.radius(), vector.radius(), accuracy: vector.radius().ulp)
             
             // Y & Z are variant, rotations can be a little inaccurate from Deg/Rad conversion
-            XCTAssertEqual(result.x, targetX, accuracy: targetX.ulp * 2.0)
-            XCTAssertEqual(result.y, targetY, accuracy: targetY.ulp * 2.0)
+            let maxAccuracy = 1E-14
+            XCTAssertEqual(result.x, targetX, accuracy: maxAccuracy)
+            XCTAssertEqual(result.y, targetY, accuracy: maxAccuracy)
         }
     }
     
