@@ -100,6 +100,7 @@ class LunarTests: XCTestCase {
     
     static var allTests = [
         ("testEquatorialCoord", testEquatorialCoord),
+        ("testIllumination", testIllumination)
         ]
     
     static let calendarFormatter: DateFormatter = {
