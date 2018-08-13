@@ -43,7 +43,7 @@ class SolarTests: XCTestCase {
             }
             
             let j2000Date = date.toJ2000Date()
-            let coordinates = Sun.fastPosition(forDate: j2000Date)
+            let coordinates = Sun.fastEquatorialPosition(forDate: j2000Date)
             
             // Currently more accurate than half a degree to NREL
             let targetAccuracy = 0.38

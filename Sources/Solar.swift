@@ -53,16 +53,30 @@ struct Sun {
         return FullCircle * L.fractional()
     }
     
-    static func fastPosition(forDate date: JulianDate) -> Spherical {
+    //
+    //
+    // A quick calculation for the postion of the Sun relative to Earth. It isn't
+    // all that accurate, being maybe accurate to 20-30 arcminutes or so. But it
+    // is accurate enough for basic calculations around sun/moon cycles, if not
+    // eclipses.
+    static func fastPosition(forCentury century: JulianCentury) -> Cartesian3D {
+        let L = self.eclipticLongitude(forCentury: century)
+        
+        let spherical = Spherical(phi: L, theta: 0.0, radius: 149_598_000.0)
+        return Cartesian3D(withSpherical: spherical)
+    }
+    
+    static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
         return self.fastPosition(forCentury: century(fromJ2000: date))
     }
     
-    static func fastPosition(forCentury century: JulianCentury) -> Spherical {
-        let L = self.eclipticLongitude(forCentury: century)
-        
-        let spherical = Spherical(phi: L, theta: 0.0, radius: 1.0)
-        let vector = Cartesian3D(withSpherical: spherical)
+    static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
+        let vector = self.fastPosition(forCentury: century)
         let transformedVector = vector * Matrix3D.transformToEquatorial(forCentury: century)
         return Spherical(withCartesian: transformedVector)
+    }
+    
+    static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
+        return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
     }
 }

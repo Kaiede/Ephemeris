@@ -25,6 +25,22 @@
 
 import Foundation
 
+struct Illumination {
+    var k: Double
+    var phi: Radians
+}
+
+// Non-scientific variable names
+extension Illumination {
+    var fraction: Double {
+        return self.k
+    }
+    
+    var phaseAngle: Radians {
+        return self.phi
+    }
+}
+
 struct Moon {
     static func meanLongitude(forCentury century: JulianCentury) -> Radians {
         return (0.606433 + 1336.855225 * century).fractional()
@@ -42,11 +58,12 @@ struct Moon {
         return FullCircle * (0.259086 + 1342.227825 * century).fractional()
     }
     
-    static func fastPosition(forDate date: JulianDate) -> Spherical {
-        return self.fastPosition(forCentury: century(fromJ2000: date))
-    }
-    
-    static func fastPosition(forCentury century: JulianCentury) -> Spherical {
+    //
+    //
+    // A faster calculation for the position of the Moon. Accurate enough for
+    // things like calculating moonrise and moonset, as well as the phase. It
+    // takes into account some of the larger sources of peturbations. 
+    static func fastPosition(forCentury century: JulianCentury) -> Cartesian3D {
         let L_0 = self.meanLongitude(forCentury: century)
         let M = self.meanAnomaly(forCentury: century)
         let MSun = Sun.meanAnomaly(forCentury: century)
@@ -55,39 +72,76 @@ struct Moon {
         
         // Calculations of Peturbations
         let dL = 22640 * sin(M)
-                 - 4586 * sin(M - 2 * D)
-                 + 2370 * sin(2 * D)
-                 + 869 * sin(2 * M)
-                 - 668 * sin(MSun)
-                 - 412 * sin(2 * F)
-                 - 212 * sin(2 * M - 2 * D)
-                 - 206 * sin(M + MSun - 2 * D)
-                 + 192 * sin(M + 2 * D)
-                 - 165 * sin(MSun - 2 * D)
-                 - 125 * sin(D)
-                 - 110 * sin(M + MSun)
-                 + 148 * sin(M - MSun)
-                 - 55 * sin(2 * F - 2 * D)
+            - 4586 * sin(M - 2 * D)
+            + 2370 * sin(2 * D)
+            + 869 * sin(2 * M)
+            - 668 * sin(MSun)
+            - 412 * sin(2 * F)
+            - 212 * sin(2 * M - 2 * D)
+            - 206 * sin(M + MSun - 2 * D)
+            + 192 * sin(M + 2 * D)
+            - 165 * sin(MSun - 2 * D)
+            - 125 * sin(D)
+            - 110 * sin(M + MSun)
+            + 148 * sin(M - MSun)
+            - 55 * sin(2 * F - 2 * D)
         
         //let S = F + (dL + 412 * sin(2 * F) + 541 * sin(MSun)) / Arcs // What is Arcs?
         let S = rad(fromArcseconds: F + (dL + 412 * sin(2 * F) + 541 * sin(MSun)))
         let h = F - 2 * D
         let N = -526 * sin(h)
-                + 44 * sin(M + h)
-                - 31 * sin(-M + h)
-                - 23 * sin(MSun + h)
-                + 11 * sin(-MSun + h)
-                - 25 * sin(-2 * M + F)
-                + 21 * sin(-M + F)
+            + 44 * sin(M + h)
+            - 31 * sin(-M + h)
+            - 23 * sin(MSun + h)
+            + 11 * sin(-MSun + h)
+            - 25 * sin(-2 * M + F)
+            + 21 * sin(-M + F)
         
         let longMoon = FullCircle * ( L_0 + dL / 1296.0E3 ).fractional()
         //let latMoon = ( 18520.0 * sin(S) + N ) / Arcs // What is Arcs?
         let latMoon = rad(fromArcseconds: 18520.0 * sin(S) + N)
         
-        let spherical = Spherical(phi: longMoon, theta: latMoon, radius: 1.0)
-        let vector = Cartesian3D(withSpherical: spherical)
+        let spherical = Spherical(phi: longMoon, theta: latMoon, radius: 384_400.0)
+        return Cartesian3D(withSpherical: spherical)
+    }
+    
+    static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
+        return self.fastPosition(forCentury: century(fromJ2000: date))
+    }
+    
+    static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
+        let vector = self.fastPosition(forCentury: century)
         let transformedVector = vector * Matrix3D.transformToEquatorial(forCentury: century)
         return Spherical(withCartesian: transformedVector)
+    }
+    
+    static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
+        return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
+    }
+    
+    //
+    //
+    // This calculates the basic phase angle (phi) and illumination fraction (k) for
+    // the moon. This isn't enough to calculate the moon phase, as phi is always reported
+    // between 0 and PI radians, so it isn't possible to determine if it is waxing or waning.
+    static func fastIllumination(forCentury century: JulianCentury) -> Illumination {
+        let moonPos = self.fastPosition(forCentury: century)
+        let earthPos = Sun.fastPosition(forCentury: century).inverted()
+        let sunMoonVec = earthPos + moonPos
         
+        // Get Euclidian Norms
+        let R = sunMoonVec.norm()
+        let RE = earthPos.norm()
+        let D = moonPos.norm()
+        
+        let cosPhi = (D * D + R * R - RE * RE) / (2.0 * D * R)
+        let phi = acos(cosPhi)
+        let k = 0.5 * (1.0 + cosPhi)
+        
+        return Illumination(k: k, phi: phi)
+    }
+    
+    static func fastIllumination(forDate date: JulianDate) -> Illumination {
+        return self.fastIllumination(forCentury: century(fromJ2000: date))
     }
 }

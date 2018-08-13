@@ -44,13 +44,57 @@ class LunarTests: XCTestCase {
             }
             
             let j2000Date = date.toJ2000Date()
-            let coordinates = Moon.fastPosition(forDate: j2000Date)
+            let coordinates = Moon.fastEquatorialPosition(forDate: j2000Date)
             
             // Currently more accurate than half a degree to NREL
             let targetAccuracy = 0.38
             
             XCTAssertEqual(coordinates.rightAscension, targetRightAscension, accuracy: targetAccuracy)
             XCTAssertEqual(coordinates.declination, targetDeclination, accuracy: targetAccuracy / 2.0)
+        }
+    }
+    
+    func testIllumination() {
+        // TODO: Need Better Test Data. Phase angle isn't fully trusted.
+        // Illumination data from http://aa.usno.navy.mil/data/docs/MoonFraction.php
+        let testDates = [
+            // Time, Phase Angle, Illumination Fraction
+            ("2005-01-01 00:00:00.000 UTC", 58.52, 0.76),
+            ("2018-08-08 00:00:00.000 UTC", 131.97, 0.17),
+            ("2015-05-15 00:00:00.000 UTC", 137.30, 0.13),
+            ("2015-02-27 00:00:00.000 UTC", 74.67, 0.63),
+            // Specifically Look at Waxing
+            ("2018-05-22 00:00:00.000 UTC", 91.89,  0.48),
+            // Look at the first day of each month, 2018
+            ("2018-01-01 00:00:00.000 UTC", 15.70, 0.98),
+            ("2018-02-01 00:00:00.000 UTC", 6.13, 1.00),
+            ("2018-03-01 00:00:00.000 UTC", 13.88, 0.99),
+            ("2018-04-01 00:00:00.000 UTC", 5.98, 1.00),
+            ("2018-05-01 00:00:00.000 UTC", 11.30, 0.99),
+            ("2018-06-01 00:00:00.000 UTC", 26.69, 0.95),
+            ("2018-07-01 00:00:00.000 UTC", 30.30, 0.93),
+            ("2018-08-01 00:00:00.000 UTC", 45.57, 0.85),
+            ("2018-09-01 00:00:00.000 UTC", 63.51, 0.72),
+            ("2018-10-01 00:00:00.000 UTC", 71.68, 0.66),
+            ("2018-11-01 00:00:00.000 UTC", 93.84, 0.47),
+            ("2018-12-01 00:00:00.000 UTC", 102.63, 0.39),
+        ]
+        
+        for (inputString, targetPhaseAngle, targetIllumination) in testDates {
+            guard let date = SolarTests.calendarFormatter.date(from: inputString) else {
+                XCTFail(inputString)
+                continue
+            }
+            
+            print(inputString)
+            let j2000Date = date.toJ2000Date()
+            let illumination = Moon.fastIllumination(forDate: j2000Date)
+            
+            // Currently more accurate than half a degree to NREL
+            let targetAccuracy = 0.01
+            
+            XCTAssertEqual(deg(fromRad: illumination.phaseAngle), targetPhaseAngle, accuracy: targetAccuracy)
+            XCTAssertEqual(illumination.fraction, targetIllumination, accuracy: targetAccuracy / 2.0)
         }
     }
     

@@ -190,9 +190,27 @@ extension Cartesian3D {
 }
 
 extension Cartesian3D {
-    func radius() -> Double {
+    func norm() -> Double {
         return sqrt( self.vector[0] * self.vector[0] +
                      self.vector[1] * self.vector[1] +
                      self.vector[2] * self.vector[2] )
     }
+    
+    func inverted() -> Cartesian3D {
+        return Cartesian3D(x: -self.x, y: -self.y, z: -self.z)
+    }
+}
+
+func + (_ lhs: Cartesian3D, _ rhs: Cartesian3D) -> Cartesian3D {
+    let x = lhs[0] + rhs[0]
+    let y = lhs[1] + rhs[1]
+    let z = lhs[2] + rhs[2]
+    return Cartesian3D(x: x, y: y, z: z)
+}
+
+func - (_ lhs: Cartesian3D, _ rhs: Cartesian3D) -> Cartesian3D {
+    let x = lhs[0] - rhs[0]
+    let y = lhs[1] - rhs[1]
+    let z = lhs[2] - rhs[2]
+    return Cartesian3D(x: x, y: y, z: z)
 }
