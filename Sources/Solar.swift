@@ -42,7 +42,7 @@ extension Matrix3D {
     }
 }
 
-struct Sun {
+public struct Sun {
     static func meanAnomaly(forCentury century: JulianCentury) -> Radians {
         return FullCircle * (0.993133 + 99.997361 * century).fractional()
     }
@@ -59,24 +59,24 @@ struct Sun {
     // all that accurate, being maybe accurate to 20-30 arcminutes or so. But it
     // is accurate enough for basic calculations around sun/moon cycles, if not
     // eclipses.
-    static func fastPosition(forCentury century: JulianCentury) -> Cartesian3D {
+    public static func fastPosition(forCentury century: JulianCentury) -> Cartesian3D {
         let L = self.eclipticLongitude(forCentury: century)
         
         let spherical = Spherical(phi: L, theta: 0.0, radius: 149_598_000.0)
         return Cartesian3D(withSpherical: spherical)
     }
     
-    static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
+    public static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
         return self.fastPosition(forCentury: century(fromJ2000: date))
     }
     
-    static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
+    public static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
         let vector = self.fastPosition(forCentury: century)
         let transformedVector = vector * Matrix3D.transformToEquatorial(forCentury: century)
         return Spherical(withCartesian: transformedVector)
     }
     
-    static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
+    public static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
         return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
     }
 }

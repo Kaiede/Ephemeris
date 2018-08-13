@@ -25,9 +25,9 @@
 
 import Foundation
 
-typealias Arcseconds = Double
-typealias Degrees = Double
-typealias Radians = Double
+public typealias Arcseconds = Double
+public typealias Degrees = Double
+public typealias Radians = Double
 
 let FullCircle: Radians = Double.pi * 2.0
 
@@ -51,7 +51,7 @@ func rad(fromArcseconds arcs: Arcseconds) -> Radians {
     return rad(fromDeg: arcs / 3600.0)
 }
 
-struct Spherical {
+public struct Spherical {
     var phi: Radians
     var theta: Radians
     var radius: Double
@@ -64,7 +64,7 @@ struct Spherical {
 }
 
 // Right Ascension / Declination Interface
-extension Spherical {
+public extension Spherical {
     var rightAscension: Degrees {
         get {
             return deg(fromRad: normalize(radians: self.phi))
@@ -91,7 +91,7 @@ extension Spherical {
 }
 
 // Altitude/Azimuth Interface
-extension Spherical {
+public extension Spherical {
     var azimuth: Degrees {
         get {
             return deg(fromRad: self.phi)
@@ -118,7 +118,7 @@ extension Spherical {
 }
 
 // From Cartesian
-extension Spherical {
+public extension Spherical {
     init(withCartesian coords: Cartesian3D) {
         // rho is Length of projection in x-y plane
         let rhoSquared = coords[0] * coords[0] + coords[1] * coords[1]
@@ -130,7 +130,7 @@ extension Spherical {
     }
 }
 
-struct Cartesian3D {
+public struct Cartesian3D {
     fileprivate var vector: [Double] = [ 0, 0, 0 ]
     
     subscript(index: Int) -> Double {
@@ -150,7 +150,7 @@ struct Cartesian3D {
 }
 
 // From Polar
-extension Cartesian3D {
+public extension Cartesian3D {
     init(withSpherical coords: Spherical) {
         let radius = coords.radius
         self.vector[0] = radius * (cos(coords.theta) * cos(coords.phi))
@@ -160,7 +160,7 @@ extension Cartesian3D {
 }
 
 // X/Y/Z Access
-extension Cartesian3D {
+public extension Cartesian3D {
     var x: Double {
         get {
             return self.vector[0]
@@ -189,7 +189,7 @@ extension Cartesian3D {
     }
 }
 
-extension Cartesian3D {
+public extension Cartesian3D {
     func norm() -> Double {
         return sqrt( self.vector[0] * self.vector[0] +
                      self.vector[1] * self.vector[1] +
@@ -201,14 +201,14 @@ extension Cartesian3D {
     }
 }
 
-func + (_ lhs: Cartesian3D, _ rhs: Cartesian3D) -> Cartesian3D {
+public func + (_ lhs: Cartesian3D, _ rhs: Cartesian3D) -> Cartesian3D {
     let x = lhs[0] + rhs[0]
     let y = lhs[1] + rhs[1]
     let z = lhs[2] + rhs[2]
     return Cartesian3D(x: x, y: y, z: z)
 }
 
-func - (_ lhs: Cartesian3D, _ rhs: Cartesian3D) -> Cartesian3D {
+public func - (_ lhs: Cartesian3D, _ rhs: Cartesian3D) -> Cartesian3D {
     let x = lhs[0] - rhs[0]
     let y = lhs[1] - rhs[1]
     let z = lhs[2] - rhs[2]

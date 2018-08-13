@@ -25,13 +25,13 @@
 
 import Foundation
 
-struct Illumination {
+public struct Illumination {
     var k: Double
     var phi: Radians
 }
 
 // Non-scientific variable names
-extension Illumination {
+public extension Illumination {
     var fraction: Double {
         return self.k
     }
@@ -41,7 +41,7 @@ extension Illumination {
     }
 }
 
-struct Moon {
+public struct Moon {
     static func meanLongitude(forCentury century: JulianCentury) -> Radians {
         return (0.606433 + 1336.855225 * century).fractional()
     }
@@ -63,7 +63,7 @@ struct Moon {
     // A faster calculation for the position of the Moon. Accurate enough for
     // things like calculating moonrise and moonset, as well as the phase. It
     // takes into account some of the larger sources of peturbations. 
-    static func fastPosition(forCentury century: JulianCentury) -> Cartesian3D {
+    public static func fastPosition(forCentury century: JulianCentury) -> Cartesian3D {
         let L_0 = self.meanLongitude(forCentury: century)
         let M = self.meanAnomaly(forCentury: century)
         let MSun = Sun.meanAnomaly(forCentury: century)
@@ -105,17 +105,17 @@ struct Moon {
         return Cartesian3D(withSpherical: spherical)
     }
     
-    static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
+    public static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
         return self.fastPosition(forCentury: century(fromJ2000: date))
     }
     
-    static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
+    public static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
         let vector = self.fastPosition(forCentury: century)
         let transformedVector = vector * Matrix3D.transformToEquatorial(forCentury: century)
         return Spherical(withCartesian: transformedVector)
     }
     
-    static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
+    public static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
         return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
     }
     
@@ -124,7 +124,7 @@ struct Moon {
     // This calculates the basic phase angle (phi) and illumination fraction (k) for
     // the moon. This isn't enough to calculate the moon phase, as phi is always reported
     // between 0 and PI radians, so it isn't possible to determine if it is waxing or waning.
-    static func fastIllumination(forCentury century: JulianCentury) -> Illumination {
+    public static func fastIllumination(forCentury century: JulianCentury) -> Illumination {
         let moonPos = self.fastPosition(forCentury: century)
         let earthPos = Sun.fastPosition(forCentury: century).inverted()
         let sunMoonVec = earthPos + moonPos
@@ -141,7 +141,7 @@ struct Moon {
         return Illumination(k: k, phi: phi)
     }
     
-    static func fastIllumination(forDate date: JulianDate) -> Illumination {
+    public static func fastIllumination(forDate date: JulianDate) -> Illumination {
         return self.fastIllumination(forCentury: century(fromJ2000: date))
     }
 }
