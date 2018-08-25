@@ -66,7 +66,7 @@ public struct Sun {
         return Cartesian3D(withSpherical: spherical)
     }
     
-    public static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
+    public static func fastPosition(forDate date: J2000Date) -> Cartesian3D {
         return self.fastPosition(forCentury: century(fromJ2000: date))
     }
     
@@ -76,7 +76,7 @@ public struct Sun {
         return Spherical(withCartesian: transformedVector)
     }
     
-    public static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
+    public static func fastEquatorialPosition(forDate date: J2000Date) -> Spherical {
         return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
     }
 }

@@ -25,6 +25,7 @@
 
 import Foundation
 
+public typealias J2000Date = Double
 public typealias JulianDate = Double
 public typealias JulianCentury = Double
 
@@ -33,7 +34,7 @@ let J1970: JulianDate = 2440587.5 // Start of Computer Epoch
 
 let JulianCenturyLength: Double = 36525.0
 
-func century(fromJ2000 date: JulianDate) -> JulianCentury {
+func century(fromJ2000 date: J2000Date) -> JulianCentury {
     return date / JulianCenturyLength
 }
 
@@ -41,7 +42,7 @@ func century(fromJulianDate date: JulianDate) -> JulianCentury {
     return century(fromJ2000: date - J2000)
 }
 
-func dateJ2000(fromCentury century: JulianCentury) -> JulianDate {
+func dateJ2000(fromCentury century: JulianCentury) -> J2000Date {
     return century * JulianCenturyLength
 }
 
@@ -57,7 +58,7 @@ public extension Date {
         return daysSince1970 + J1970
     }
     
-    public func toJ2000Date() -> JulianDate {
+    public func toJ2000Date() -> J2000Date {
         return self.toJulianDate() - J2000
     }
     
@@ -67,7 +68,7 @@ public extension Date {
         self.init(timeIntervalSince1970: secondsSince1970)
     }
     
-    public init(fromJ2000 julianDate: JulianDate) {
+    public init(fromJ2000 julianDate: J2000Date) {
         self.init(fromJulian: julianDate + J2000)
     }
 }

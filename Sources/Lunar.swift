@@ -105,7 +105,7 @@ public struct Moon {
         return Cartesian3D(withSpherical: spherical)
     }
     
-    public static func fastPosition(forDate date: JulianDate) -> Cartesian3D {
+    public static func fastPosition(forDate date: J2000Date) -> Cartesian3D {
         return self.fastPosition(forCentury: century(fromJ2000: date))
     }
     
@@ -115,7 +115,7 @@ public struct Moon {
         return Spherical(withCartesian: transformedVector)
     }
     
-    public static func fastEquatorialPosition(forDate date: JulianDate) -> Spherical {
+    public static func fastEquatorialPosition(forDate date: J2000Date) -> Spherical {
         return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
     }
     
@@ -141,7 +141,7 @@ public struct Moon {
         return Illumination(k: k, phi: phi)
     }
     
-    public static func fastIllumination(forDate date: JulianDate) -> Illumination {
+    public static func fastIllumination(forDate date: J2000Date) -> Illumination {
         return self.fastIllumination(forCentury: century(fromJ2000: date))
     }
 }
