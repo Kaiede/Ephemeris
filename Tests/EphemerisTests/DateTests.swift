@@ -83,10 +83,29 @@ class JulianCalendarTests: XCTestCase {
             XCTAssert(drift < maxDriftSec, "drift of \(drift) for date '\(targetString)' exceeds \(Int(maxDriftSec * 1000)) milliseconds")
         }
     }
-    
+
+    func testGmstFromJulian() {
+        // Test Data From http://aa.usno.navy.mil/data/docs/JulianDate.php
+        let testDates = [
+            // Date, Julian Date, GMST
+            ("2000-01-01 12:00:00.000 UTC", 2451545.000000, 24110.54841), // J2000
+            ("2018-08-09 03:51:00.000 UTC", 2458339.660417, 1631423.946390157),
+            ("2020-02-29 16:15:00.000 UTC", 2458909.177083, 1766146.1714087394),
+            ("2005-04-15 18:30:00.000 UTC", 2453476.270833, 480963.03110201214),
+            ("2025-12-25 15:45:45.000 UTC", 2461035.156771, 2269058.0811706544),
+            ("3001-05-15 17:38:25.000 UTC", 2817287.235012, 86542408.84071764)
+        ]
+
+        for (_, inputJulianDate, targetGmst) in testDates {
+            let calcGmst = gmst(fromJulianDate: inputJulianDate)
+            XCTAssertEqual(calcGmst, targetGmst)
+        }
+    }
+
     static var allTests = [
         ("testJulianFromDate", testJulianFromDate),
-        ("testDateFromJulian", testDateFromJulian)
+        ("testDateFromJulian", testDateFromJulian),
+        ("testGmstFromJulian", testGmstFromJulian)
     ]
     
     static let calendarFormatter: DateFormatter = {

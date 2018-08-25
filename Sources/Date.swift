@@ -28,6 +28,7 @@ import Foundation
 public typealias J2000Date = Double
 public typealias JulianDate = Double
 public typealias JulianCentury = Double
+public typealias GMST = Double
 
 let J2000: JulianDate = 2451545.0
 let J1970: JulianDate = 2440587.5 // Start of Computer Epoch
@@ -46,6 +47,21 @@ func dateJ2000(fromCentury century: JulianCentury) -> J2000Date {
     return century * JulianCenturyLength
 }
 
+func gmst(fromCentury century: JulianCentury) -> GMST {
+    return 24110.54841
+           + (8640184.812866 * century)
+           + (0.093104 * century * century)
+           - (0.0000062 * century * century * century)
+}
+
+func gmst(fromJ2000 date: J2000Date) -> GMST {
+    return gmst(fromCentury: century(fromJ2000: date))
+}
+
+func gmst(fromJulianDate date: JulianDate) -> GMST {
+    return gmst(fromCentury: century(fromJulianDate: date))
+}
+
 public extension Date {
     public func toJulianDay() -> JulianDate {
         return self.toJulianDate().rounded(.down)
@@ -60,6 +76,10 @@ public extension Date {
     
     public func toJ2000Date() -> J2000Date {
         return self.toJulianDate() - J2000
+    }
+
+    public func toGmst() -> GMST {
+        return gmst(fromJ2000: self.toJ2000Date())
     }
     
     public init(fromJulian julianDate: JulianDate) {
