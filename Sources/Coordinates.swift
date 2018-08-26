@@ -26,6 +26,7 @@
 import Foundation
 
 public typealias Arcseconds = Double
+public typealias Arcminutes = Double
 public typealias Degrees = Double
 public typealias Radians = Double
 
@@ -47,8 +48,37 @@ func rad(fromDeg deg: Degrees) -> Radians {
     return deg * Double.pi / 180.0
 }
 
+func rad(fromArcminutes arcm: Arcminutes) -> Radians {
+    return rad(fromDeg: arcm / 60.0)
+}
+
 func rad(fromArcseconds arcs: Arcseconds) -> Radians {
     return rad(fromDeg: arcs / 3600.0)
+}
+
+func findRoots(yMinus: Double, y0: Double, yPlus: Double) -> (xe: Double, ye: Double, roots: [Double]) {
+    let a = 0.5 * (yPlus + yMinus) - y0
+    let b = 0.5 * (yPlus - yMinus)
+    let c = y0
+
+    let xe = -b / (2.0 * a)
+    let ye = (((a * xe) + b) * xe) + c
+
+    var roots: [Double] = []
+    let dis = (b * b) - (4.0 * a * c)
+    if dis >= 0.0 {
+        let dx = (0.5 * sqrt(dis)) / fabs(a)
+        let root1 = xe - dx;
+        let root2 = xe + dx;
+
+        if fabs(root1) <= 1.0 {
+            let realRoot = root1 < -1.0 ? root2 : root1
+            roots.append(realRoot)
+        }
+        if fabs(root2) <= 1.0 { roots.append(root2) }
+    }
+
+    return (xe: xe, ye: ye, roots: roots)
 }
 
 public struct Spherical {
@@ -57,7 +87,7 @@ public struct Spherical {
     var radius: Double
     
     init(phi: Radians, theta: Radians, radius: Double) {
-        self.phi = phi
+        self.phi = normalize(radians: phi)
         self.theta = theta
         self.radius = radius
     }
@@ -125,7 +155,7 @@ public extension Spherical {
         self.radius = sqrt( rhoSquared + coords[2] * coords[2] )
         
         // Azimuth & Altitude
-        self.phi = atan2( coords[1] , coords[0] )
+        self.phi = normalize(radians: atan2( coords[1] , coords[0] ))
         self.theta = atan2( coords[2] , rhoSquared.squareRoot() )
     }
 }

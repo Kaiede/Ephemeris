@@ -25,11 +25,16 @@
 
 import Foundation
 
+public typealias Seconds = Double
+public typealias Hours = Double
 public typealias J2000Date = Double
+public typealias ModifiedJulianDate = Double
 public typealias JulianDate = Double
 public typealias JulianCentury = Double
+public typealias JulianInterval = Double
 public typealias GMST = Double
 
+let MJDEpoch: JulianDate = 2400000.5
 let J2000: JulianDate = 2451545.0
 let J1970: JulianDate = 2440587.5 // Start of Computer Epoch
 
@@ -43,28 +48,61 @@ func century(fromJulianDate date: JulianDate) -> JulianCentury {
     return century(fromJ2000: date - J2000)
 }
 
+func century(fromModifiedJulianDate date: ModifiedJulianDate) -> JulianCentury {
+    return century(fromJulianDate: date + MJDEpoch)
+}
+
 func dateJ2000(fromCentury century: JulianCentury) -> J2000Date {
     return century * JulianCenturyLength
 }
 
-func gmst(fromCentury century: JulianCentury) -> GMST {
-    return 24110.54841
-           + (8640184.812866 * century)
-           + (0.093104 * century * century)
-           - (0.0000062 * century * century * century)
+func julianDay(fromDate date: JulianDate) -> JulianDate {
+    return date.rounded(.down)
+}
+
+func julianTime(fromHours hours: Hours) -> JulianInterval {
+    return hours / 24.0
+}
+
+func seconds(duringJulianDate date: JulianDate) -> Seconds {
+    let secondsPerDay: Double = 86400.0
+    let day = date.rounded(.down)
+    return (date - day) * secondsPerDay
+}
+
+func seconds(duringJ200Date date: J2000Date) -> Seconds {
+    return seconds(duringJulianDate: date)
+}
+
+func modifiedJulianDate(fromJulianDate date: JulianDate) -> ModifiedJulianDate {
+    return date - MJDEpoch
+}
+
+func modifiedJulianDate(fromJ2000 date: J2000Date) ->ModifiedJulianDate {
+    return modifiedJulianDate(fromJulianDate: date + J2000)
+}
+
+func gmst(fromModifiedJulian date: ModifiedJulianDate) -> GMST {
+    let date0 = date.rounded(.down)
+    let centuryDate: Double = century(fromModifiedJulianDate: date)
+    let centuryDay: Double = century(fromModifiedJulianDate: date0)
+    let universalTime: Double = seconds(duringJulianDate: date)
+    let gmstTime = 24110.54841
+        + (8640184.812866 * centuryDay)
+        + (1.0027379093 * universalTime)
+        + (0.093104 * centuryDate * centuryDate)
+        - (0.0000062 * centuryDate * centuryDate * centuryDate)
+
+    return gmstTime
 }
 
 func gmst(fromJ2000 date: J2000Date) -> GMST {
-    return gmst(fromCentury: century(fromJ2000: date))
-}
-
-func gmst(fromJulianDate date: JulianDate) -> GMST {
-    return gmst(fromCentury: century(fromJulianDate: date))
+    return gmst(fromModifiedJulian: modifiedJulianDate(fromJ2000: date))
 }
 
 public extension Date {
     public func toJulianDay() -> JulianDate {
-        return self.toJulianDate().rounded(.down)
+        return julianDay(fromDate: self.toJulianDate())
     }
     
     public func toJulianDate() -> JulianDate {
@@ -79,7 +117,7 @@ public extension Date {
     }
 
     public func toGmst() -> GMST {
-        return gmst(fromJ2000: self.toJ2000Date())
+        return gmst(fromModifiedJulian: modifiedJulianDate(fromJulianDate: self.toJulianDate()))
     }
     
     public init(fromJulian julianDate: JulianDate) {

@@ -32,9 +32,9 @@ class LunarTests: XCTestCase {
         // Algorithm is producing results very similar to expected, but maybe a bit off. Not sure.
         let testDates = [
             // Time, Right Ascension, Declination
-            ("2005-01-01 19:00:00.000 UTC", 169.62940682363717, 3.7971391300167823),
-            ("2018-08-08 15:00:00.000 UTC", 97.29047832421709, 22.813143713718517),
-            ("3001-01-06 17:00:00.000 UTC", 169.5325374070488, 5.052870689946976)
+            ("2005-01-01 19:00:00.000 UTC", 171.1319730083413, 7.350831282429239),
+            ("2018-08-08 15:00:00.000 UTC", 97.29047832421709, 20.68959174083346),
+            ("3001-01-06 17:00:00.000 UTC", 168.14127690650466, 1.8185384351205993)
         ]
         
         for (inputString, targetRightAscension, targetDeclination) in testDates {
@@ -44,7 +44,7 @@ class LunarTests: XCTestCase {
             }
             
             let j2000Date = date.toJ2000Date()
-            let coordinates = Moon.fastEquatorialPosition(forDate: j2000Date)
+            let coordinates = Moon.fastEquatorialPosition(forJ2000: j2000Date)
             
             // Currently more accurate than half a degree to NREL
             let targetAccuracy = 0.38
@@ -55,29 +55,29 @@ class LunarTests: XCTestCase {
     }
     
     func testIllumination() {
-        // TODO: Need Better Test Data. Phase angle isn't fully trusted.
+        // TODO: Need Better Test Data. Phase angle is only checking for changes in behavior.
         // Illumination data from http://aa.usno.navy.mil/data/docs/MoonFraction.php
         let testDates = [
             // Time, Phase Angle, Illumination Fraction
-            ("2005-01-01 00:00:00.000 UTC", 58.52, 0.76),
-            ("2018-08-08 00:00:00.000 UTC", 131.97, 0.17),
-            ("2015-05-15 00:00:00.000 UTC", 137.30, 0.13),
-            ("2015-02-27 00:00:00.000 UTC", 74.67, 0.63),
+            ("2005-01-01 00:00:00.000 UTC", 58.57, 0.76),
+            ("2018-08-08 00:00:00.000 UTC", 131.91, 0.17),
+            ("2015-05-15 00:00:00.000 UTC", 137.28, 0.13),
+            ("2015-02-27 00:00:00.000 UTC", 74.72, 0.63),
             // Specifically Look at Waxing
-            ("2018-05-22 00:00:00.000 UTC", 91.89,  0.48),
+            ("2018-05-22 00:00:00.000 UTC", 91.91,  0.48),
             // Look at the first day of each month, 2018
-            ("2018-01-01 00:00:00.000 UTC", 15.70, 0.98),
-            ("2018-02-01 00:00:00.000 UTC", 6.13, 1.00),
-            ("2018-03-01 00:00:00.000 UTC", 13.88, 0.99),
-            ("2018-04-01 00:00:00.000 UTC", 5.98, 1.00),
-            ("2018-05-01 00:00:00.000 UTC", 11.30, 0.99),
-            ("2018-06-01 00:00:00.000 UTC", 26.69, 0.95),
+            ("2018-01-01 00:00:00.000 UTC", 16.18, 0.98),
+            ("2018-02-01 00:00:00.000 UTC", 6.10, 1.00),
+            ("2018-03-01 00:00:00.000 UTC", 13.95, 0.99),
+            ("2018-04-01 00:00:00.000 UTC", 7.50, 1.00),
+            ("2018-05-01 00:00:00.000 UTC", 12.32, 0.99),
+            ("2018-06-01 00:00:00.000 UTC", 26.82, 0.95),
             ("2018-07-01 00:00:00.000 UTC", 30.30, 0.93),
-            ("2018-08-01 00:00:00.000 UTC", 45.57, 0.85),
-            ("2018-09-01 00:00:00.000 UTC", 63.51, 0.72),
-            ("2018-10-01 00:00:00.000 UTC", 71.68, 0.66),
+            ("2018-08-01 00:00:00.000 UTC", 45.68, 0.85),
+            ("2018-09-01 00:00:00.000 UTC", 63.64, 0.72),
+            ("2018-10-01 00:00:00.000 UTC", 71.74, 0.66),
             ("2018-11-01 00:00:00.000 UTC", 93.84, 0.47),
-            ("2018-12-01 00:00:00.000 UTC", 102.63, 0.39),
+            ("2018-12-01 00:00:00.000 UTC", 102.57, 0.39),
         ]
         
         for (inputString, targetPhaseAngle, targetIllumination) in testDates {
@@ -97,10 +97,71 @@ class LunarTests: XCTestCase {
             XCTAssertEqual(illumination.fraction, targetIllumination, accuracy: targetAccuracy / 2.0)
         }
     }
+
+    func testMoonrise() {
+        // Seattle, WA
+        let testLocation = GeographicLocation(longitude: -122.3321, latitude: 47.6062)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm v"
+        formatter.timeZone = TimeZone(abbreviation: "PDT")!
+        formatter.calendar = Calendar(identifier: .gregorian)
+
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS v"
+        inputFormatter.timeZone = TimeZone(abbreviation: "PDT")!
+        inputFormatter.calendar = Calendar(identifier: .gregorian)
+
+        // Data from https://www.timeanddate.com/moon/usa/seattle
+        // And from Astronomy on the Personal Computer (Sunset example)
+        let testDates: [(String, String, String)] = [
+            // Time, Moonset, Moonrise
+            // Look at the first day of each month, 2018
+            ("2018-01-01 00:00:00.000 PT", "07:16 PT", "16:33 PT"),
+            ("2018-02-01 00:00:00.000 PT", "08:24 PT", "18:58 PT"),
+            ("2018-03-01 00:00:00.000 PT", "06:52 PT", "17:46 PT"),
+            ("2018-04-01 00:00:00.000 PT", "07:47 PT", "21:12 PT"),
+            ("2018-05-01 00:00:00.000 PT", "07:13 PT", "22:13 PT"),
+            ("2018-06-01 00:00:00.000 PT", "07:53 PT", "23:39 PT"),
+            ("2018-07-01 00:00:00.000 PT", "08:32 PT", "23:26 PT"),
+            ("2018-08-01 00:00:00.000 PT", "10:34 PT", "23:13 PT"),
+            ("2018-09-01 00:00:00.000 PT", "12:55 PT", "23:06 PT"),
+            ("2018-10-01 00:00:00.000 PT", "14:11 PT", "23:17 PT"),
+            ("2018-11-01 00:00:00.000 PT", "15:26 PT", "00:28 PT"),
+            ("2018-12-01 00:00:00.000 PT", "14:00 PT", "01:00 PT"),
+            ]
+
+        for (inputString, moonsetTime, moonriseTime) in testDates {
+            guard let date = inputFormatter.date(from: inputString) else {
+                XCTFail(inputString)
+                continue
+            }
+
+            let j2000Date = date.toJ2000Date()
+            let event = Moon.events(forDate: j2000Date, planetRise: .moonrise, location: testLocation)
+            switch event {
+            case .neverSets:
+                XCTFail("No Data Never Sets: \(inputString)")
+            case .neverRises:
+                XCTFail("No Data Never Rises: \(inputString)")
+            case .Rises( _):
+                XCTFail("No Data Only Rises: \(inputString)")
+            case .Sets( _):
+                XCTFail("No Data Only Sets: \(inputString)")
+            case .RisesAndSets(let rises, let sets):
+                let setsString = formatter.string(from: Date(fromJ2000: sets))
+                let setsComplete = inputFormatter.string(from: Date(fromJ2000: sets))
+                let risesString = formatter.string(from: Date(fromJ2000: rises))
+                let risesComplete = inputFormatter.string(from: Date(fromJ2000: rises))
+                XCTAssertEqual(setsString, moonsetTime, "\(inputString) -> \(setsComplete)")
+                XCTAssertEqual(risesString, moonriseTime, "\(inputString) -> \(risesComplete)")
+            }
+        }
+    }
     
     static var allTests = [
         ("testEquatorialCoord", testEquatorialCoord),
-        ("testIllumination", testIllumination)
+        ("testIllumination", testIllumination),
+        ("testMoonrise", testMoonrise)
         ]
     
     static let calendarFormatter: DateFormatter = {

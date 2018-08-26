@@ -27,22 +27,11 @@ import Foundation
 
 extension Double {
     func fractional() -> Double {
-        return self.truncatingRemainder(dividingBy: 1.0)
+        return self - self.rounded(.down)
     }
 }
 
-extension Matrix3D {
-    static func transformToEcliptic(forCentury century: JulianCentury) -> Matrix3D {
-        let eps: Double = ( 23.43929111 - (46.8150 + ( 0.00059 - 0.001813 * century) * century ) * century / 3600.0)
-        return Matrix3D(withRotationAroundX: rad(fromDeg: eps))
-    }
-    
-    static func transformToEquatorial(forCentury century: JulianCentury) -> Matrix3D {
-        return Matrix3D.transformToEcliptic(forCentury: century).transposed()
-    }
-}
-
-public struct Sun {
+public struct Sun: Body {
     static func meanAnomaly(forCentury century: JulianCentury) -> Radians {
         return FullCircle * (0.993133 + 99.997361 * century).fractional()
     }
@@ -64,19 +53,5 @@ public struct Sun {
         
         let spherical = Spherical(phi: L, theta: 0.0, radius: 149_598_000.0)
         return Cartesian3D(withSpherical: spherical)
-    }
-    
-    public static func fastPosition(forDate date: J2000Date) -> Cartesian3D {
-        return self.fastPosition(forCentury: century(fromJ2000: date))
-    }
-    
-    public static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
-        let vector = self.fastPosition(forCentury: century)
-        let transformedVector = vector * Matrix3D.transformToEquatorial(forCentury: century)
-        return Spherical(withCartesian: transformedVector)
-    }
-    
-    public static func fastEquatorialPosition(forDate date: J2000Date) -> Spherical {
-        return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
     }
 }
