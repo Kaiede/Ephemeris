@@ -114,7 +114,7 @@ public enum PlanetRise: Double {
     }
 }
 
-enum RiseEvent {
+public enum RiseEvent {
     case neverRises
     case neverSets
     case Rises(J2000Date)
@@ -138,7 +138,7 @@ struct Events {
     // TODO: Needs a rise, set,
 }
 
-struct GeographicLocation {
+public struct GeographicLocation {
     let longitude: Degrees
     let latitude: Degrees
 
@@ -154,13 +154,13 @@ struct GeographicLocation {
         return rad(fromDeg: self.longitude)
     }
 
-    init(longitude: Degrees, latitude: Degrees) {
+    public init(longitude: Degrees, latitude: Degrees) {
         self.longitude = longitude
         self.latitude = latitude
     }
 }
 
-extension Body {
+public extension Body {
     static func sinAltitude(forDate date: J2000Date, location: GeographicLocation) -> Double {
         let position = self.fastEquatorialPosition(forJ2000: date)
         let gmstTime = gmst(fromJ2000: date)
@@ -172,7 +172,7 @@ extension Body {
 
     // Assumes that the date is the start of the search, using local time. So it should be midnight
     // for the local region.
-    static func events(forDate date: J2000Date, planetRise: PlanetRise, location: GeographicLocation) -> RiseEvent {
+    public static func events(forDate date: J2000Date, planetRise: PlanetRise, location: GeographicLocation) -> RiseEvent {
         let sinh0 = planetRise.rawValue
 
         var riseTime: Double? = nil
