@@ -33,17 +33,17 @@ public protocol Body {
 }
 
 public extension Body {
-    public static func fastPosition(forJ2000 date: J2000Date) -> Cartesian3D {
+    static func fastPosition(forJ2000 date: J2000Date) -> Cartesian3D {
         return self.fastPosition(forCentury: century(fromJ2000: date))
     }
 
-    public static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
+    static func fastEquatorialPosition(forCentury century: JulianCentury) -> Spherical {
         let vector = self.fastPosition(forCentury: century)
         let transformedVector = vector * Matrix3D.transformToEquatorial(forCentury: century)
         return Spherical(withCartesian: transformedVector)
     }
 
-    public static func fastEquatorialPosition(forJ2000 date: J2000Date) -> Spherical {
+    static func fastEquatorialPosition(forJ2000 date: J2000Date) -> Spherical {
         return self.fastEquatorialPosition(forCentury: century(fromJ2000: date))
     }
 }
@@ -75,7 +75,7 @@ public protocol IlluminatedBody {
 }
 
 public extension IlluminatedBody {
-    public static func fastIllumination(forDate date: J2000Date) -> Illumination {
+    static func fastIllumination(forDate date: J2000Date) -> Illumination {
         return self.fastIllumination(forCentury: century(fromJ2000: date))
     }
 }
@@ -172,7 +172,7 @@ public extension Body {
 
     // Assumes that the date is the start of the search, using local time. So it should be midnight
     // for the local region.
-    public static func events(forDate date: J2000Date, planetRise: PlanetRise, location: GeographicLocation) -> RiseEvent {
+    static func events(forDate date: J2000Date, planetRise: PlanetRise, location: GeographicLocation) -> RiseEvent {
         let sinh0 = planetRise.rawValue
 
         var riseTime: Double? = nil

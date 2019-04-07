@@ -101,32 +101,32 @@ func gmst(fromJ2000 date: J2000Date) -> GMST {
 }
 
 public extension Date {
-    public func toJulianDay() -> JulianDate {
+    func toJulianDay() -> JulianDate {
         return julianDay(fromDate: self.toJulianDate())
     }
     
-    public func toJulianDate() -> JulianDate {
+    func toJulianDate() -> JulianDate {
         let secondsSince1970 = self.timeIntervalSince1970
         let daysSince1970 = secondsSince1970 / (24.0 * 60.0 * 60.0)
         
         return daysSince1970 + J1970
     }
     
-    public func toJ2000Date() -> J2000Date {
+    func toJ2000Date() -> J2000Date {
         return self.toJulianDate() - J2000
     }
 
-    public func toGmst() -> GMST {
+    func toGmst() -> GMST {
         return gmst(fromModifiedJulian: modifiedJulianDate(fromJulianDate: self.toJulianDate()))
     }
     
-    public init(fromJulian julianDate: JulianDate) {
+    init(fromJulian julianDate: JulianDate) {
         let daysSince1970 = julianDate - J1970
         let secondsSince1970: TimeInterval = daysSince1970 * (24.0 * 60.0 * 60.0)
         self.init(timeIntervalSince1970: secondsSince1970)
     }
     
-    public init(fromJ2000 julianDate: J2000Date) {
+    init(fromJ2000 julianDate: J2000Date) {
         self.init(fromJulian: julianDate + J2000)
     }
 }
